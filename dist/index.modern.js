@@ -295,6 +295,12 @@ var AuthService = /*#__PURE__*/function () {
   };
 
   _proto.authorize = function authorize(options) {
+    var url = this.buildAuthorizeUrl(options);
+    window.location.replace(url);
+    return true;
+  };
+
+  _proto.buildAuthorizeUrl = function buildAuthorizeUrl(options) {
     var _this$props = this.props,
         clientId = _this$props.clientId,
         provider = _this$props.provider,
@@ -320,9 +326,7 @@ var AuthService = /*#__PURE__*/function () {
       codeChallengeMethod: 'S256'
     }, options && _extends({}, options));
 
-    var url = (authorizeEndpoint || provider + "/authorize") + "?" + toUrlEncoded(query);
-    window.location.replace(url);
-    return true;
+    return (authorizeEndpoint || provider + "/authorize") + "?" + toUrlEncoded(query);
   };
 
   _proto.fetchToken = function fetchToken(code, isRefresh) {

@@ -195,6 +195,13 @@ export class AuthService<TIDToken = JWTIDToken> {
 
   // this will do a full page reload and to to the OAuth2 provider's login page and then redirect back to redirectUri
   authorize(options?: AuthOptions): boolean {
+
+    const url = this.buildAuthorizeUrl(options);
+    window.location.replace(url)
+    return true
+  }
+
+  buildAuthorizeUrl(options?: AuthOptions) {
     const { clientId, provider, authorizeEndpoint, redirectUri, scopes, audience } = this.props
 
     const pkce = createPKCECodes()
@@ -213,11 +220,9 @@ export class AuthService<TIDToken = JWTIDToken> {
       codeChallengeMethod: 'S256',
       ...(options && { ...options })
     }
-    // Responds with a 302 redirect
-    const url = `${authorizeEndpoint || `${provider}/authorize`}?${toUrlEncoded(query)}`
-    window.location.replace(url)
-    return true
-  }
+
+    return `${authorizeEndpoint || `${provider}/authorize`}?${toUrlEncoded(query)}`
+}
 
   // this happens after a full page reload. Read the code from localstorage
   async fetchToken(code: string, isRefresh = false): Promise<AuthTokens> {

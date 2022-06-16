@@ -60,6 +60,7 @@ export declare class AuthService<TIDToken = JWTIDToken> {
     logout(shouldEndSession?: boolean): Promise<boolean>;
     login(options?: AuthOptions): Promise<void>;
     authorize(options?: AuthOptions): boolean;
+    buildAuthorizeUrl(options?: AuthOptions): string;
     fetchToken(code: string, isRefresh?: boolean): Promise<AuthTokens>;
     armRefreshTimer(refreshToken: string, timeoutDuration: number): void;
     startTimer(): void;
