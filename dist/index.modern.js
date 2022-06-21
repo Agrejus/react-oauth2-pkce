@@ -116,29 +116,7 @@ var toUrlEncoded = function toUrlEncoded(obj) {
 
 var AuthService = /*#__PURE__*/function () {
   function AuthService(props) {
-    var _this = this;
-
     this.props = props;
-    var code = this.getCodeFromLocation(window.location);
-
-    if (code !== null) {
-      this.fetchToken(code).then(function () {
-        _this.restoreUri();
-      })["catch"](function (e) {
-        _this.removeItem('pkce');
-
-        _this.removeItem('auth');
-
-        _this.removeCodeFromLocation();
-
-        console.warn({
-          e: e
-        });
-      });
-    } else if (this.props.autoRefresh) {
-      this.startTimer();
-    }
-
     this.tryInvokeRedirectCallback();
   }
 
@@ -254,18 +232,18 @@ var AuthService = /*#__PURE__*/function () {
     }
 
     try {
-      var _this3 = this;
+      var _this2 = this;
 
-      _this3.removeItem('pkce');
+      _this2.removeItem('pkce');
 
-      _this3.removeItem('auth');
+      _this2.removeItem('auth');
 
       if (shouldEndSession) {
-        var _this3$props = _this3.props,
-            clientId = _this3$props.clientId,
-            provider = _this3$props.provider,
-            logoutEndpoint = _this3$props.logoutEndpoint,
-            redirectUri = _this3$props.redirectUri;
+        var _this2$props = _this2.props,
+            clientId = _this2$props.clientId,
+            provider = _this2$props.provider,
+            logoutEndpoint = _this2$props.logoutEndpoint,
+            redirectUri = _this2$props.redirectUri;
         var query = {
           client_id: clientId,
           post_logout_redirect_uri: redirectUri
@@ -284,9 +262,9 @@ var AuthService = /*#__PURE__*/function () {
 
   _proto.login = function login(options) {
     try {
-      var _this5 = this;
+      var _this4 = this;
 
-      _this5.authorize(options);
+      _this4.authorize(options);
 
       return Promise.resolve();
     } catch (e) {
@@ -335,17 +313,17 @@ var AuthService = /*#__PURE__*/function () {
     }
 
     try {
-      var _this7 = this;
+      var _this6 = this;
 
-      var _this7$props = _this7.props,
-          clientId = _this7$props.clientId,
-          clientSecret = _this7$props.clientSecret,
-          contentType = _this7$props.contentType,
-          provider = _this7$props.provider,
-          tokenEndpoint = _this7$props.tokenEndpoint,
-          redirectUri = _this7$props.redirectUri,
-          _this7$props$autoRefr = _this7$props.autoRefresh,
-          autoRefresh = _this7$props$autoRefr === void 0 ? true : _this7$props$autoRefr;
+      var _this6$props = _this6.props,
+          clientId = _this6$props.clientId,
+          clientSecret = _this6$props.clientSecret,
+          contentType = _this6$props.contentType,
+          provider = _this6$props.provider,
+          tokenEndpoint = _this6$props.tokenEndpoint,
+          redirectUri = _this6$props.redirectUri,
+          _this6$props$autoRefr = _this6$props.autoRefresh,
+          autoRefresh = _this6$props$autoRefr === void 0 ? true : _this6$props$autoRefr;
       var grantType = 'authorization_code';
 
       var payload = _extends(_extends({
@@ -363,7 +341,7 @@ var AuthService = /*#__PURE__*/function () {
           refresh_token: code
         });
       } else {
-        var pkce = _this7.getPkce();
+        var pkce = _this6.getPkce();
 
         var codeVerifier = pkce.codeVerifier;
         payload = _extends(_extends({}, payload), {}, {
@@ -379,20 +357,20 @@ var AuthService = /*#__PURE__*/function () {
         method: 'POST',
         body: toUrlEncoded(payload)
       })).then(function (response) {
-        _this7.removeItem('pkce');
+        _this6.removeItem('pkce');
 
         return Promise.resolve(response.json()).then(function (json) {
           if (isRefresh && !json.refresh_token) {
             json.refresh_token = payload.refresh_token;
           }
 
-          _this7.setAuthTokens(json);
+          _this6.setAuthTokens(json);
 
           if (autoRefresh) {
-            _this7.startTimer();
+            _this6.startTimer();
           }
 
-          return _this7.getAuthTokens();
+          return _this6.getAuthTokens();
         });
       });
     } catch (e) {
@@ -401,14 +379,14 @@ var AuthService = /*#__PURE__*/function () {
   };
 
   _proto.armRefreshTimer = function armRefreshTimer(refreshToken, timeoutDuration) {
-    var _this8 = this;
+    var _this7 = this;
 
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
 
     this.timeout = window.setTimeout(function () {
-      _this8.fetchToken(refreshToken, true).then(function (_ref2) {
+      _this7.fetchToken(refreshToken, true).then(function (_ref2) {
         var newRefreshToken = _ref2.refresh_token,
             expiresAt = _ref2.expires_at;
         if (!expiresAt) return;
@@ -416,16 +394,16 @@ var AuthService = /*#__PURE__*/function () {
         var timeout = expiresAt - now;
 
         if (timeout > 0) {
-          _this8.armRefreshTimer(newRefreshToken, timeout);
+          _this7.armRefreshTimer(newRefreshToken, timeout);
         } else {
-          _this8.removeItem('auth');
+          _this7.removeItem('auth');
 
-          _this8.removeCodeFromLocation();
+          _this7.removeCodeFromLocation();
         }
       })["catch"](function (e) {
-        _this8.removeItem('auth');
+        _this7.removeItem('auth');
 
-        _this8.removeCodeFromLocation();
+        _this7.removeCodeFromLocation();
 
         console.warn({
           e: e

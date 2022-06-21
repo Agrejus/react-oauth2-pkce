@@ -57,21 +57,21 @@ export class AuthService<TIDToken = JWTIDToken> {
 
   constructor(props: AuthServiceProps) {
     this.props = props
-    const code = this.getCodeFromLocation(window.location)
-    if (code !== null) {
-      this.fetchToken(code)
-        .then(() => {
-          this.restoreUri()
-        })
-        .catch((e) => {
-          this.removeItem('pkce')
-          this.removeItem('auth')
-          this.removeCodeFromLocation()
-          console.warn({ e })
-        })
-    } else if (this.props.autoRefresh) {
-      this.startTimer()
-    }
+    // const code = this.getCodeFromLocation(window.location)
+    // if (code !== null) {
+    //   this.fetchToken(code)
+    //     .then(() => {
+    //       this.restoreUri()
+    //     })
+    //     .catch((e) => {
+    //       this.removeItem('pkce')
+    //       this.removeItem('auth')
+    //       this.removeCodeFromLocation()
+    //       console.warn({ e })
+    //     })
+    // } else if (this.props.autoRefresh) {
+    //   this.startTimer()
+    // }
 
     this.tryInvokeRedirectCallback();
   }
