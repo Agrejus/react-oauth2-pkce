@@ -222,7 +222,7 @@ export class AuthService<TIDToken = JWTIDToken> {
     }
 
     return `${authorizeEndpoint || `${provider}/authorize`}?${toUrlEncoded(query)}`
-}
+  }
 
   // this happens after a full page reload. Read the code from localstorage
   async fetchToken(code: string, isRefresh = false): Promise<AuthTokens> {
@@ -267,10 +267,15 @@ export class AuthService<TIDToken = JWTIDToken> {
       body: toUrlEncoded(payload)
     })
     this.removeItem('pkce')
-    let json = await response.json()
+    const json = await response.json()
     if (isRefresh && !json.refresh_token) {
       json.refresh_token = payload.refresh_token
     }
+
+    if ('error' in json) {
+      throw new Error(`Error: ${json.error},\r\nDescription: ${json.error_description}`)
+    }
+
     this.setAuthTokens(json as AuthTokens)
     if (autoRefresh) {
       this.startTimer()

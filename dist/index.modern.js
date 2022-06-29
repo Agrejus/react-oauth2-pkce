@@ -364,6 +364,10 @@ var AuthService = /*#__PURE__*/function () {
             json.refresh_token = payload.refresh_token;
           }
 
+          if ('error' in json) {
+            throw new Error("Error: " + json.error + ",\r\nDescription: " + json.error_description);
+          }
+
           _this6.setAuthTokens(json);
 
           if (autoRefresh) {
